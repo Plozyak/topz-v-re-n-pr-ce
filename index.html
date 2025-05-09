@@ -1,43 +1,4 @@
-<script type="text/javascript">
-        var gk_isXlsx = false;
-        var gk_xlsxFileLookup = {};
-        var gk_fileData = {};
-        function filledCell(cell) {
-          return cell !== '' && cell != null;
-        }
-        function loadFileData(filename) {
-        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
-            try {
-                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
-                var firstSheetName = workbook.SheetNames[0];
-                var worksheet = workbook.Sheets[firstSheetName];
-
-                // Convert sheet to JSON to filter blank rows
-                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
-                // Filter out blank rows (rows where all cells are empty, null, or undefined)
-                var filteredData = jsonData.filter(row => row.some(filledCell));
-
-                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
-                var headerRowIndex = filteredData.findIndex((row, index) =>
-                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
-                );
-                // Fallback
-                if (headerRowIndex === -1 || headerRowIndex > 25) {
-                  headerRowIndex = 0;
-                }
-
-                // Convert filtered JSON back to CSV
-                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
-                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
-                return csv;
-            } catch (e) {
-                console.error(e);
-                return "";
-            }
-        }
-        return gk_fileData[filename] || "";
-        }
-        </script><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="cs">
 <head>
     <meta charset="UTF-8">
@@ -61,19 +22,36 @@
                 <nav class="space-x-4">
                     <a href="#sluzby" class="hover:underline">Služby</a>
                     <a href="#o-nas" class="hover:underline">O nás</a>
-                    <a href="#blog" class="hover:underline">Blog</a>
+                    <a href="#jak-pracujeme" class="hover:underline">Jak pracujeme</a>
                     <a href="#kontakt" class="bg-white text-blue-700 py-2 px-4 rounded-lg hover:bg-gray-200 transition">Kontakt</a>
                 </nav>
             </div>
         </div>
     </header>
 
-    <!-- Hero Section -->
-    <section class="bg-gradient-to-r from-blue-600 to-blue-400 text-white py-16">
-        <div class="container mx-auto px-4 text-center">
-            <h1 class="text-4xl md:text-5xl font-bold mb-4">Závěrečné práce na míru</h1>
-            <p class="text-lg md:text-xl mb-6 max-w-2xl mx-auto">Píšeme seminární, bakalářské a diplomové práce, praktické části a upravujeme texty podle připomínek. Kvalita, rychlost a diskrétnost zaručena.</p>
-            <a href="#kontakt" class="inline-block bg-white text-blue-700 py-3 px-8 rounded-lg hover:bg-gray-200 transition text-lg font-semibold">Objednat nyní</a>
+    <!-- Hero Section with Form -->
+    <section id="hero-form" class="bg-gradient-to-r from-blue-600 to-blue-400 text-white py-16">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Left: Text -->
+                <div class="text-left">
+                    <h1 class="text-4xl md:text-5xl font-bold mb-4">Závěrečné práce snadno a rychle</h1>
+                    <p class="text-lg md:text-xl mb-6">Vyplňte formulář nyní a získejte cenovou nabídku zdarma! Píšeme seminární, bakalářské a diplomové práce s garancí kvality a diskrétnosti.</p>
+                </div>
+                <!-- Right: Form -->
+                <div class="bg-white text-gray-800 p-6 rounded-lg shadow-lg">
+                    <h3 class="text-lg font-semibold mb-4">Objednejte si práci hned</h3>
+                    <input type="text" id="name" placeholder="Vaše jméno" class="w-full p-2 mb-3 rounded-lg border">
+                    <input type="email" id="email" placeholder="Váš e-mail" class="w-full p-2 mb-3 rounded-lg border">
+                    <input type="tel" id="phone" placeholder="Váš telefon (+420...)" class="w-full p-2 mb-3 rounded-lg border">
+                    <textarea id="message" placeholder="Jakou práci potřebujete?" class="w-full p-2 mb-3 rounded-lg border h-24"></textarea>
+                    <div class="flex items-center mb-3">
+                        <input type="checkbox" id="terms" class="mr-2">
+                        <label for="terms" class="text-sm">Souhlasím s <a href="#" class="underline">pravidly</a></label>
+                    </div>
+                    <button onclick="submitForm('desktop')" class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition font-semibold">Odeslat zprávu</button>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -104,17 +82,27 @@
     <!-- Experience Section -->
     <section id="o-nas" class="py-12 bg-gray-50">
         <div class="container mx-auto px-4">
-            <h2 class="text-3xl font-semibold text-center mb-8">Naše zkušenosti</h2>
-            <div class="max-w-3xl mx-auto text-center">
-                <p class="text-lg mb-4">S <strong>5 lety zkušeností</strong> v oblasti psaní závěrečných prací jsme dokončili <strong>tisíce projektů</strong> pro studenty po celém Česku. Náš tým tvoří <strong>přes 50 odborníků</strong> z oborů:</p>
-                <ul class="list-disc list-inside text-lg mb-4">
-                    <li>Ekonomie a management</li>
-                    <li>Právo a právní vědy</li>
-                    <li>Technické obory (inženýrství, IT)</li>
-                    <li>Humanitní vědy (psychologie, sociologie)</li>
-                    <li>Přírodní vědy a medicína</li>
+            <h2 class="text-3xl font-semibold text-center mb-8">Naše zkušenosti – Váš úspěch!</h2>
+            <div class="max-w-4xl mx-auto text-center">
+                <p class="text-lg mb-4">S více než <strong>5 lety zkušeností</strong> v oblasti psaní závěrečných prací jsme pomohli <strong>tisícům studentů</strong> po celém Česku dosáhnout jejich akademických cílů. Naše know-how je postaveno na pevných základech odbornosti a preciznosti, díky čemuž garantujeme profesionální zpracování každé zakázky.</p>
+                <p class="text-lg mb-4"><strong>📚 Náš tým tvoří více než 50 specialistů z těchto klíčových oborů:</strong></p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-lg mb-6">
+                    <div>Ekonomie a management – Strategické analýzy, podnikové plány, finanční řízení</div>
+                    <div>Právo a právní vědy – Legislativní rešerše, právní analýzy, případové studie</div>
+                    <div>Technické obory (inženýrství, IT) – Softwarové projekty, technické návrhy, výzkumy</div>
+                    <div>Humanitní vědy (psychologie, sociologie) – Kvalitativní a kvantitativní výzkum, analýza dat</div>
+                    <div>Přírodní vědy a medicína – Laboratorní zprávy, výzkumné projekty, případové studie</div>
+                </div>
+                <p class="text-lg mb-4"><strong>✍️ Kompletní servis od A do Z</strong><br>Píšeme nejen kompletní práce, ale zpracováváme i praktické části a provádíme úpravy dle připomínek vedoucích. Naším cílem je, abyste odevzdali práci, která bude nejen splňovat všechny akademické požadavky, ale také přesvědčí odbornou komisi o vaší připravenosti a znalostech.</p>
+                <p class="text-lg mb-4"><strong>✅ Proč si vybrat právě nás?</strong></p>
+                <ul class="list-disc list-inside text-lg mb-4 mx-auto max-w-2xl">
+                    <li>Garance originality a kvality</li>
+                    <li>Individuální přístup ke každému projektu</li>
+                    <li>Rychlé zpracování a dodržení termínů</li>
+                    <li>Bezplatné konzultace a poradenství</li>
                 </ul>
-                <p class="text-lg">Píšeme kompletní práce, včetně <strong>praktických částí</strong>, a provádíme <strong>úpravy podle připomínek vedoucích</strong>.</p>
+                <p class="text-lg mb-6"><strong>💡 Udělejte krok k úspěchu a nechte nás pomoci vám s vaší závěrečnou prací!</strong><br>Společně dosáhneme toho, aby vaše práce byla profesionální, originální a bez chyb.</p>
+                <a href="#" onclick="scrollToForm()" class="inline-block bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition">Kontaktujte nás ještě dnes!</a>
             </div>
         </div>
     </section>
@@ -126,7 +114,7 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div class="bg-gray-50 p-6 rounded-lg shadow-md">
                     <h3 class="text-xl font-bold mb-2">Seminární práce</h3>
-                    <p>Příprava kompletních seminárních prací na míru, včetně výzkumu. Od <strong>299,99 Kč</strong> za stránku.</p>
+                    <p>Příprava kompletních seminárních prací na míru, včetně výzkumu. Od <strong>299,99 Kč</strong> za stránку.</p>
                 </div>
                 <div class="bg-gray-50 p-6 rounded-lg shadow-md">
                     <h3 class="text-xl font-bold mb-2">Bakalářské a závěrečné práce</h3>
@@ -134,15 +122,39 @@
                 </div>
                 <div class="bg-gray-50 p-6 rounded-lg shadow-md">
                     <h3 class="text-xl font-bold mb-2">Diplomové práce</h3>
-                    <p>Kompletní příprava diplomových prací s důrazem na kvalitu. Od <strong>399,99 Kč</strong> za сторінку.</p>
+                    <p>Kompletní příprava diplomových prací s důrazem na kvalitu. Od <strong>399,99 Kč</strong> za stránку.</p>
                 </div>
                 <div class="bg-gray-50 p-6 rounded-lg shadow-md">
-                    <h3 class="text-xl font-bold mb-2">Praktické části</h3>
-                    <p>Vytvoření analýz, výzkumů a praktických částí. Cena na vyžádání.</p>
+                    <h3 class="text-xl font-bold mb-2">Praktické částи</h3>
+                    <p>Vytvoření analýз, výzkumů a praktických částí. Cena на vyžádání.</p>
                 </div>
                 <div class="bg-gray-50 p-6 rounded-lg shadow-md">
                     <h3 class="text-xl font-bold mb-2">Úpravy podle připomínek</h3>
-                    <p>Profesionální úpravy textů na základě připomínek vedoucího. Cena на vyžádání.</p>
+                    <p>Profesionální úpravy textů на základě připomínek vedoucího. Cena на vyžádání.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How We Work Section -->
+    <section id="jak-pracujeme" class="py-12 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-semibold text-center mb-8">Jak pracujeme</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-white p-6 rounded-lg shadow-md text-center">
+                    <div class="text-4xl mb-4">📝</div>
+                    <h3 class="text-xl font-bold mb-2">1. Vyplníte nezávaznou žádost</h3>
+                    <p>Zadejte své požadavky do naší formy a popište, jakou práci potřebujete.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md text-center">
+                    <div class="text-4xl mb-4">🤝</div>
+                    <h3 class="text-xl font-bold mb-2">2. Dohodneme podmínky</h3>
+                    <p>Náš manažer vás kontaktuje, navrhne cenu, podepíšeme smlouvu a platbu rozdělíme na 3 části.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md text-center">
+                    <div class="text-4xl mb-4">✅</div>
+                    <h3 class="text-xl font-bold mb-2">3. Kvalitní a originální práce</h3>
+                    <p>Každá práce je prověřena na použití AI a plagiátorství. Vše píší lidé!</p>
                 </div>
             </div>
         </div>
@@ -152,17 +164,26 @@
     <section class="py-12 bg-gray-50">
         <div class="container mx-auto px-4">
             <h2 class="text-3xl font-semibold text-center mb-8">Naše ceny</h2>
-            <div class="max-w-3xl mx-auto">
-                <ul class="list-disc list-inside text-lg space-y-4">
-                    <li><strong>Seminární práce:</strong> Kompletní příprava textů od 299,99 Kč za сторінку.</li>
-                    <li><strong>Bakalářské a závěrečné práce:</strong> Psaní včetně výzkumu od 399,99 Kč за сторінку.</li>
-                    <li><strong>Diplomové práce:</strong> Kompletní příprava a úpravy od 399,99 Kč за сторінку.</li>
-                    <li><strong>Praktické částи а úpravy:</strong> Příprava analýz nebo úpravy textů – cena на vyžádání.</li>
-                </ul>
-                <p class="text-center mt-6 text-sm text-gray-600">Ceny se mohou lišit podle složitosti. Kontaktujte nás pro přesnou nabídku.</p>
-                <div class="text-center mt-6">
-                    <a href="#kontakt" class="inline-block bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition">Zjistit cenu</a>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+                <div class="bg-white p-6 rounded-lg shadow-md text-center">
+                    <h3 class="text-xl font-bold mb-2">Seminární práce</h3>
+                    <p class="mb-4">Kompletní příprava textů včetně výzkumu.</p>
+                    <p class="text-lg font-semibold">Od 299,99 Kč za stránку</p>
                 </div>
+                <div class="bg-white p-6 rounded-lg shadow-md text-center">
+                    <h3 class="text-xl font-bold mb-2">Bakalářské a diplomové práce</h3>
+                    <p class="mb-4">Psaní včetně praktických částí a úprav.</p>
+                    <p class="text-lg font-semibold">Od 399,99 Kč za stránку</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md text-center">
+                    <h3 class="text-xl font-bold mb-2">Praktické částи a úpravy</h3>
+                    <p class="mb-4">Příprava analýз nebo úpravy podle připomínek.</p>
+                    <p class="text-lg font-semibold">Cena na vyžádání</p>
+                </div>
+            </div>
+            <p class="text-center mt-6 text-sm text-gray-600">Ceny se mohou lišit podle složitosti. Kontaktujte nás pro přesnou nabídku.</p>
+            <div class="text-center mt-6">
+                <a href="#" onclick="scrollToForm()" class="inline-block bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition">Zjistit cenu</a>
             </div>
         </div>
     </section>
@@ -180,50 +201,36 @@
                     <p class="italic mb-4">"Diplomka byla připravená přesně podle mých požadavků a v termínu. Skvělá práce!"</p>
                     <p class="font-semibold">— Tomáš, student ČVUT</p>
                 </div>
+                <div class="bg-gray-50 p-6 rounded-lg shadow-md">
+                    <p class="italic mb-4">"Spolupráce byla skvělá, podepsali jsme smlouvu, platbu jsme rozdělili na 3 části, práce byla zasílána po částech a výsledek byl vynikající!"</p>
+                    <p class="font-semibold">— Jana, studentka UK</p>
+                </div>
+                <div class="bg-gray-50 p-6 rounded-lg shadow-md">
+                    <p class="italic mb-4">"Rychlá komunikace a profesionální přístup. Moje seminární práce byla připravena přesně podle zadání!"</p>
+                    <p class="font-semibold">— Martin, student MU</p>
+                </div>
             </div>
         </div>
     </section>
 
-    <!-- Blog Section -->
-    <section id="blog" class="py-12 bg-gray-50">
-        <div class="container mx-auto px-4">
-            <h2 class="text-3xl font-semibold text-center mb-8">Náš blog</h2>
-            <p class="text-lg text-center mb-6">Užitečné tipy a triky pro psaní závěrečných prací a organizaci studia.</p>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div class="bg-gray-50 p-6 rounded-lg shadow-md">
-                    <h3 class="text-xl font-bold mb-2">Jak vybrat téma diplomové práce</h3>
-                    <p class="mb-4">Průvodce výběrem zajímavého a zvládnutelného tématu pro váš projekt.</p>
-                    <a href="#" class="text-blue-600 hover:underline">Číst více</a>
-                </div>
-                <div class="bg-gray-50 p-6 rounded-lg shadow-md">
-                    <h3 class="text-xl font-bold mb-2">5 tipů na efektivní psaní seminární práce</h3>
-                    <p class="mb-4">Jak napsat kvalitní práci a ušetřit čas.</p>
-                    <a href="#" class="text-blue-600 hover:underline">Číst více</a>
-                </div>
-                <div class="bg-gray-50 p-6 rounded-lg shadow-md">
-                    <h3 class="text-xl font-bold mb-2">Jak zvládnout stres při psaní bakalářky</h3>
-                    <p class="mb-4">Praktické rady, jak si udržet klid a motivaci.</p>
-                    <a href="#" class="text-blue-600 hover:underline">Číst více</a>
-                </div>
-            </div>
-            <p class="text-center mt-6"><a href="#" class="text-blue-600 hover:underline">Zobrazit všechny články</a></p>
-        </div>
-    </section>
-
-    <!-- Contact Section -->
-    <section id="kontakt" class="py-12 bg-blue-600 text-white">
+    <!-- Contact Section (Mobile) -->
+    <section id="kontakt" class="py-12 bg-blue-600 text-white md:hidden">
         <div class="container mx-auto px-4 text-center">
             <h2 class="text-3xl font-semibold mb-6">Objednejte si svou závěrečnou práci ještě dnes</h2>
             <p class="text-lg mb-6 max-w-2xl mx-auto">Popište nám svůj projekt a my připravíme vše přesně podle vašich požadavků!</p>
             <div class="max-w-lg mx-auto">
-                <input type="text" placeholder="Vaše jméno" class="w-full p-3 mb-4 rounded-lg">
-                <input type="email" placeholder="Váš e-mail" class="w-full p-3 mb-4 rounded-lg">
-                <textarea placeholder="Jakou práci potřebujete?" class="w-full p-3 mb-4 rounded-lg h-32"></textarea>
-                <button class="bg-white text-blue-600 py-3 px-8 rounded-lg hover:bg-gray-200 transition font-semibold">Odeslat zprávu</button>
+                <input type="text" id="name-mobile" placeholder="Vaše jméno" class="w-full p-3 mb-4 rounded-lg">
+                <input type="email" id="email-mobile" placeholder="Váš e-mail" class="w-full p-3 mb-4 rounded-lg">
+                <input type="tel" id="phone-mobile" placeholder="Váš telefon (+420...)" class="w-full p-3 mb-4 rounded-lg">
+                <textarea id="message-mobile" placeholder="Jakou práci potřebujete?" class="w-full p-3 mb-4 rounded-lg h-32"></textarea>
+                <div class="flex items-center mb-4">
+                    <input type="checkbox" id="terms-mobile" class="mr-2">
+                    <label for="terms-mobile" class="text-sm">Souhlasím s <a href="#" class="underline">pravidly</a></label>
+                </div>
+                <button onclick="submitForm('mobile')" class="bg-white text-blue-600 py-3 px-8 rounded-lg hover:bg-gray-200 transition font-semibold">Odeslat zprávu</button>
             </div>
-            <div class="mt-8 flex flex-col md:flex-row justify-center gap-4">
+            <div class="mt-8 flex flex-col justify-center gap-4">
                 <p class="text-lg"><strong>E-mail:</strong> <a href="mailto:info@topzaverecneprace.cz" class="underline">info@topzaverecneprace.cz</a></p>
-                <p class="text-lg"><strong>Telefon:</strong> <a href="tel:+420123456789" class="underline">+420 123 456 789</a></p>
                 <p class="text-lg"><strong>WhatsApp:</strong> <a href="https://wa.me/+420123456789" class="underline"><i class="fab fa-whatsapp mr-1" style="color: #25D366;"></i>+420 123 456 789</a></p>
             </div>
         </div>
@@ -233,9 +240,8 @@
     <footer class="bg-gray-800 text-white py-6">
         <div class="container mx-auto px-4 text-center">
             <p>© 2025 TopZávěrečnéPráce.cz. Všechna práva vyhrazena.</p>
-            <div class="mt-2 flex flex-col md:flex-row justify-center gap-4">
+            <div class="mt-2">
                 <p><a href="mailto:info@topzaverecneprace.cz" class="underline">info@topzaverecneprace.cz</a></p>
-                <p><a href="tel:+420123456789" class="underline">+420 123 456 789</a></p>
             </div>
         </div>
     </footer>
@@ -251,8 +257,81 @@
             });
         });
 
-        // Basic form submission handling (client-side placeholder)
-        document.querySelector('button').addEventListener('click', () => {
-            alert('Děkujeme za zprávu! Ozveme se vám do 24 hodin.');
-        });
+        // Scroll to form (desktop: hero form, mobile: contact section)
+        function scrollToForm() {
+            const isMobile = window.innerWidth < 768;
+            const target = isMobile ? document.querySelector('#kontakt') : document.querySelector('#hero-form');
+            target.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Form validation and Telegram submission
+        function submitForm(formType) {
+            const prefix = formType === 'mobile' ? '-mobile' : '';
+            const name = document.querySelector(`#name${prefix}`).value.trim();
+            const email = document.querySelector(`#email${prefix}`).value.trim();
+            const phone = document.querySelector(`#phone${prefix}`).value.trim();
+            const message = document.querySelector(`#message${prefix}`).value.trim();
+            const terms = document.querySelector(`#terms${prefix}`).checked;
+
+            // Validation
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+            if (!name) {
+                alert('Prosím, vyplňte jméno.');
+                return;
+            }
+            if (!email || !emailRegex.test(email)) {
+                alert('Prosím, zadejte platný e-mail.');
+                return;
+            }
+            if (!phone) {
+                alert('Prosím, zadejte telefonní číslo.');
+                return;
+            }
+            if (!message) {
+                alert('Prosím, popište, jakou práci potřebujete.');
+                return;
+            }
+            if (!terms) {
+                alert('Prosím, souhlaste s pravidly před odesláním.');
+                return;
+            }
+
+            // Prepare Telegram message
+            const telegramMessage = `Nová zpráva z TopZávěrečnéPráce.cz:\n\n` +
+                                   `Jméno: ${name}\n` +
+                                   `E-mail: ${email}\n` +
+                                   `Telefon: ${phone}\n` +
+                                   `Zpráva: ${message}`;
+
+            // Send to Telegram
+            fetch(`https://api.telegram.org/bot8129644056:AAGtcM8b8SADps85oGsDh3oC_IhIwTyu-b4/sendMessage`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    chat_id: '1445517709',
+                    text: telegramMessage
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.ok) {
+                    alert('Děkujeme za zprávu! Ozveme se vám do 24 hodin.');
+                    // Clear form
+                    document.querySelector(`#name${prefix}`).value = '';
+                    document.querySelector(`#email${prefix}`).value = '';
+                    document.querySelector(`#phone${prefix}`).value = '';
+                    document.querySelector(`#message${prefix}`).value = '';
+                    document.querySelector(`#terms${prefix}`).checked = false;
+                } else {
+                    alert('Chyba při odesílání zprávy. Zkuste to znovu.');
+                }
+            })
+            .catch(error => {
+                alert('Chyba při odesílání zprávy. Zkuste to znovu.');
+                console.error('Error:', error);
+            });
+        }
     </script>
