@@ -16,6 +16,23 @@
       gtag('js', new Date());
       gtag('config', 'AW-17072408556');
     </script>
+    <!-- Google Ads Conversion Tracking -->
+    <script>
+      function gtag_report_conversion(url) {
+        var callback = function () {
+          if (typeof(url) != 'undefined') {
+            window.location = url;
+          }
+        };
+        gtag('event', 'conversion', {
+            'send_to': 'AW-17072408556/nb8JCIL1yMYaEOyP4cw_',
+            'value': 1.0,
+            'currency': 'CZK',
+            'event_callback': callback
+        });
+        return false;
+      }
+    </script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
@@ -359,6 +376,9 @@
             .then(response => response.json())
             .then(data => {
                 if (data.ok) {
+                    // Trigger Google Ads conversion tracking
+                    gtag_report_conversion();
+                    
                     alert('Děkujeme za vaši zprávu! Ozveme se vám do 24 hodin a veškeré informace vám zašleme na váš e-mail.');
                     // Clear form
                     document.querySelector(`#name${prefix}`).value = '';
